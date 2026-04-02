@@ -13,7 +13,6 @@
     headerCta?.classList.toggle("open");
   });
 
-  // Close mobile menu on nav link click
   document.querySelectorAll(".nav-link").forEach((link) => {
     link.addEventListener("click", () => {
       nav.classList.remove("open");
@@ -90,7 +89,6 @@
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("visible");
-          // For about-cards, also trigger bar animation
           revealObserver.unobserve(entry.target);
         }
       });
@@ -148,7 +146,7 @@
   }
 
   // ===== ABOUT CARDS BAR ANIMATION =====
-  const aboutCards = document.querySelectorAll(".about-card");
+  const aboutCards = document.querySelectorAll(".about-card, .expertise-card");
   const cardObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -161,6 +159,32 @@
     { threshold: 0.3 }
   );
   aboutCards.forEach((card) => cardObserver.observe(card));
+
+  // ===== GLOBAL MAP ROUTE ANIMATION =====
+  const routeLines = document.querySelectorAll(".route-line");
+  if (routeLines.length) {
+    const mapObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            routeLines.forEach((line, i) => {
+              const length = line.getTotalLength();
+              line.style.strokeDasharray = length;
+              line.style.strokeDashoffset = length;
+              setTimeout(() => {
+                line.style.transition = `stroke-dashoffset 2s ease-in-out`;
+                line.style.strokeDashoffset = "0";
+              }, 500 + i * 600);
+            });
+            mapObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    const mapContainer = document.querySelector(".global-map");
+    if (mapContainer) mapObserver.observe(mapContainer);
+  }
 
   // ===== WHATSAPP FLOAT ENTRANCE =====
   const waFloat = document.querySelector(".whatsapp-float");
